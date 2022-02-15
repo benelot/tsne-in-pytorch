@@ -30,7 +30,7 @@ class SNE:
     def _compute_perplexity_from_sigma(self, data_matrix, center_idx, sigma):
         similarities = self._similarity(data_matrix[center_idx, :], data_matrix, sigma, "h")
         p = similarities / similarities.sum()
-        shannon = - (p[p != 0] * torch.log2(p[p != 0])).sum()  # log(0)回避
+        shannon = - (p[p != 0] * torch.log2(p[p != 0])).sum()  # log(0) avoidance
         perp = 2 ** shannon.item()
         return perp
 
@@ -82,6 +82,7 @@ class SNE:
         p = self._compute_cond_prob(X_similarities, "h")
 
         # 4. Repeat the following until it converges
+        # TODO: this step runs on the full dataset, but possibly could be batched for faster convergence on large datasets
         loss_history = []
         for i in tqdm(range(self.n_epochs), desc="fitting"):
             optimizer.zero_grad()
