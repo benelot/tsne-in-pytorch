@@ -68,10 +68,11 @@ class SNE:
 
     def fit_transform(self, X, verbose=False):
         self.N = X.shape[0]
-        X = torch.tensor(X)
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        X = torch.tensor(X, device=device)
 
         # 1. Randomly initialize y
-        y = torch.randn(size=(self.N, self.n_components), requires_grad=True)
+        y = torch.randn(size=(self.N, self.n_components), requires_grad=True, device=device)
         optimizer = optim.Adam([y], lr=self.lr)
 
         # 2. Obtain the variance of the normal distribution corresponding to each data point in high-dimensional space from the specified perplexity.
@@ -86,7 +87,7 @@ class SNE:
         loss_history = []
         for i in tqdm(range(self.n_epochs), desc="fitting"):
             optimizer.zero_grad()
-            y_similarities = self._compute_similarity(y, torch.ones(self.N) / (2 ** (1/2)), "l")
+            y_similarities = self._compute_similarity(y, torch.ones(self.N, device=device) / (2 ** (1/2)), "l")
             q = self._compute_cond_prob(y_similarities, "l")
 
             kl_loss = (p[p != 0] * (p[p != 0] / q[p != 0]).log()).mean()  # log(0) avoidance
@@ -98,7 +99,7 @@ class SNE:
             plt.plot(loss_history)
             plt.xlabel("epoch")
             plt.ylabel("loss")
-        return y.detach().numpy()
+        return y.cpu().detach().numpy()
 
 
 class TSNE(SNE):

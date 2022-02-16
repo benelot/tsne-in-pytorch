@@ -21,7 +21,7 @@ def plot_result(x_transformed, y, title):
 
 if __name__ == "__main__":
     digits = load_digits()
-    digit_qty = 200
+    digit_qty = 2000
     # only use top x samples for faster computation
     X, y = digits.data[:digit_qty, :], digits.target[:digit_qty]
 
