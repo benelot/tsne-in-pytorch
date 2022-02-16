@@ -1,0 +1,6 @@
+# conda install pytorch==1.7.1 torchvision cudatoolkit=10.1 -c pytorch
+pytorch==1.7.1
+numpy=1.21.1
+tqdm==4.62.3
+matplotlib==3.5.1
+scikit-learn==1.0.2
